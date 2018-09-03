@@ -27,6 +27,9 @@ public class BjknController {
     @Value("${collect.bjkn.168}")
     private String bjkn168;
 
+    @Value("${collect.bjkn.6909}")
+    private String bjkn6909;
+
     @Autowired
     private BjknService bjknService;
 
@@ -108,7 +111,64 @@ public class BjknController {
             e.printStackTrace();
         }
 
-        return "success";
+        return "ok";
+    }
+
+    /**
+     * 采集开奖号码6909
+     */
+    @RequestMapping("/collect6909")
+    public String collect6909()
+    {
+        // 是否有新号码
+        int fileBuild = 0;
+
+        try{
+            String html;
+            html = command.html(bjkn6909 + System.currentTimeMillis(), "");
+
+            // 解析获取的json字符串
+            if (!html.equals("404")) {
+                JSONObject number = JSONObject.parseObject(html.trim());
+                JSONArray datalist = JSONArray.parseArray(number.getString("rows"));
+                int num = datalist.size();
+                if (num > 10) num = 10;
+                String preDrawIssue;
+                String preDrawCode;
+                String n1,n2,n3,n4,n5;
+                int id;
+                for (int i=0; i < num; i++) {
+                    JSONObject data = JSONObject.parseObject(datalist.getString(i));
+                    // 期号
+                    preDrawIssue = data.getString("termNum");
+                    // 开奖号码
+                    n1 = data.getString("n1");
+                    n2 = data.getString("n2");
+                    n3 = data.getString("n3");
+                    n4 = data.getString("n4");
+                    n5 = data.getString("n5");
+                    preDrawCode = n1 + "," + n2 + "," + n3 + "," + n4 + "," + n5;
+                    id = this.insertBjkn(preDrawIssue, preDrawCode, "6909");
+                    if (id == 1) {
+                        fileBuild = 1;
+                    }
+                    data = null;
+                    preDrawIssue = null;
+                    preDrawCode = null;
+                }
+                html = null;
+                number = null;
+                datalist = null;
+                // 如果有新号码，生成json文件
+                if (fileBuild == 1) {
+                    this.buildJson();
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return "ok";
     }
 
     /**
@@ -125,12 +185,12 @@ public class BjknController {
         // ID
         int id = Integer.valueOf(preDrawIssue);
         // 开奖号码
-        String[] arr = new String[] {"168"};
+        String[] arr = new String[] {"168", "6909"};
         String[] openNumber;
         if (command.useArraysBinarySearch(arr, platform)) {
             openNumber = preDrawCode.split(",");
         } else {
-            logger.error(lotName + "号码切割失败");
+            logger.error(lotName + platform + "号码切割失败");
             openNumber = preDrawCode.split("|");
         }
         try {
@@ -143,7 +203,7 @@ public class BjknController {
                 bjkn.setCreate_time(new Date());
                 bjkn.setDatetime(new Date());
                 bjkn.setState(0);
-                bjkn.setPrev_text("168");
+                bjkn.setPrev_text(platform);
                 bjkn.setBall_1(Integer.valueOf(openNumber[0]));
                 bjkn.setBall_2(Integer.valueOf(openNumber[1]));
                 bjkn.setBall_3(Integer.valueOf(openNumber[2]));
@@ -166,24 +226,16 @@ public class BjknController {
                 bjkn.setBall_20(Integer.valueOf(openNumber[19]));
                 try {
                     bjknService.addBjkn(bjkn);
-                    logger.info(lotName + " - 期号：" + preDrawIssue + ", 开奖号码：" + preDrawCode +"，更新成功");
+                    logger.info(lotName + platform + " - 期号：" + preDrawIssue + ", 开奖号码：" + preDrawCode +"，更新成功");
                     fileBuild = 1;
                 } catch (Exception e) {
-                    logger.info(lotName + " - 期号：" + preDrawIssue + ", 开奖号码：" + preDrawCode +"，插入失败");
+                    logger.info(lotName + platform + " - 期号：" + preDrawIssue + ", 开奖号码：" + preDrawCode +"，插入失败");
                 }
                 bjkn = null;
-                /*int[] numbers = new int[openNumber.length];
-                for (int j=0; j < openNumber.length; j++) {
-                    numbers[j] = Integer.valueOf(openNumber[j]);
-                }
-                System.out.println(Arrays.toString(numbers));*/
-            } else {
-                /*int issue = rel.getId();*/
-//              logger.info("期号：" + preDrawIssue + "，已存在");
             }
             rel = null;
         } catch (Exception e) {
-            logger.error(lotName + " - 期号：" + id + "核对失败，号码：" + preDrawCode);
+            logger.error(lotName + platform + " - 期号：" + id + "核对失败，号码：" + preDrawCode);
             e.printStackTrace();
         }
         return fileBuild;

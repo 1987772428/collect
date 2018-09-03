@@ -43,16 +43,29 @@ public class ScheduledTask {
     @Scheduled(cron = "${scheduled.cron.bjkn}")
     public void scheduleTaskBjkn()
     {
-
-        logger.info("开始采集北京快乐8号码");
+        logger.info("开始采集北京快乐8168号码");
         bjknController.collect();
+    }
+
+    @Scheduled(cron = "${scheduled.cron.bjkn}")
+    public void scheduleTaskBjkn6909()
+    {
+        logger.info("开始采集北京快乐86909号码");
+        bjknController.collect6909();
     }
 
     @Scheduled(cron="${scheduled.cron.bjpk}")
     public void scheduleTaskBjpk()
     {
-        logger.info("开始采集北京pk10号码");
+        logger.info("开始采集北京pk10168号码");
         bjpkController.collect();
+    }
+
+    @Scheduled(cron="${scheduled.cron.bjpk}")
+    public void scheduleTaskBjpk6909()
+    {
+        logger.info("开始采集北京pk106909号码");
+        bjpkController.collect6909();
     }
 
     @Scheduled(cron="${scheduled.cron.xyft}")
@@ -72,8 +85,15 @@ public class ScheduledTask {
     @Scheduled(cron="${scheduled.cron.cq}")
     public void scheduleTaskCq()
     {
-        logger.info("开始采集重庆时时彩号码");
+        logger.info("开始采集重庆时时彩168号码");
         cqController.collect();
+    }
+
+    @Scheduled(cron="${scheduled.cron.cq}")
+    public void scheduleTaskCq6909()
+    {
+        logger.info("开始采集重庆时时彩6909号码");
+        cqController.collect6909();
     }
 
     @Scheduled(cron="${scheduled.cron.gdsf}")

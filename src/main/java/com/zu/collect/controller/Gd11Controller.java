@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -59,12 +61,20 @@ public class Gd11Controller {
                 String preDrawIssue;
                 String preDrawCode;
                 int id;
-                int j = 0;
+                // 匹配元素存入数组，倒序获取
+                List<String> list = new ArrayList<>();
                 while (m.find()) {
                     int i=1;
-                    if (j >= 10) break;
+                    list.add(m.group(i));
+                }
+                // 数组下标对应实际位置减1
+                int length = list.size() - 1;
+                // 每次获取10条数据
+                int maxSize = length - 10;
+                for (int j = length; j >= maxSize; j--) {
+                    System.out.println(list.get(j));
                     Pattern q = Pattern.compile(regx);
-                    Matcher n = q.matcher(m.group(i));
+                    Matcher n = q.matcher(list.get(j));
                     if (n.find()) {
                         preDrawIssue = n.group(1).trim();
                         preDrawCode = n.group(2).trim();
@@ -75,7 +85,6 @@ public class Gd11Controller {
                         preDrawIssue = null;
                         preDrawCode = null;
                     }
-                    j++;
                 }
                 // 如果有新号码，生成json文件
                 if (fileBuild == 1) {
