@@ -113,7 +113,7 @@ public class BjpkController {
                 if (num > 10) num = 10;
                 String preDrawIssue;
                 String preDrawCode;
-                String n1,n2,n3,n4,n5;
+                String n1,n2,n3,n4,n5,n6,n7,n8,n9,n10;
                 int id;
                 for (int i=0; i < num; i++) {
                     JSONObject data = JSONObject.parseObject(datalist.getString(i));
@@ -125,7 +125,12 @@ public class BjpkController {
                     n3 = data.getString("n3");
                     n4 = data.getString("n4");
                     n5 = data.getString("n5");
-                    preDrawCode = n1 + "," + n2 + "," + n3 + "," + n4 + "," + n5;
+                    n6 = data.getString("n6");
+                    n7 = data.getString("n7");
+                    n8 = data.getString("n8");
+                    n9 = data.getString("n9");
+                    n10 = data.getString("n10");
+                    preDrawCode = n1 + "," + n2 + "," + n3 + "," + n4 + "," + n5 + "," + n6 + "," + n7 + "," + n8 + "," + n9 + "," + n10;
                     // logger.info("期号：" + preDrawIssue + ", 开奖号码：" + preDrawCode);
                     id = this.insertBjpk(preDrawIssue, preDrawCode, "6909");
                     if (id == 1) {

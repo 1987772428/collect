@@ -113,7 +113,9 @@ public class Command {
      * */
     public boolean useArraysBinarySearch(String[] arr, String targetValue)
     {
+        System.out.println(targetValue);
         int a =  Arrays.binarySearch(arr, targetValue);
+        System.out.println(a);
         if(a >= 0)
             return true;
         else

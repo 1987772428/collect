@@ -135,7 +135,7 @@ public class BjknController {
                 if (num > 10) num = 10;
                 String preDrawIssue;
                 String preDrawCode;
-                String n1,n2,n3,n4,n5;
+                String n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15,n16,n17,n18,n19,n20;
                 int id;
                 for (int i=0; i < num; i++) {
                     JSONObject data = JSONObject.parseObject(datalist.getString(i));
@@ -147,7 +147,22 @@ public class BjknController {
                     n3 = data.getString("n3");
                     n4 = data.getString("n4");
                     n5 = data.getString("n5");
-                    preDrawCode = n1 + "," + n2 + "," + n3 + "," + n4 + "," + n5;
+                    n6 = data.getString("n6");
+                    n7 = data.getString("n7");
+                    n8 = data.getString("n8");
+                    n9 = data.getString("n9");
+                    n10 = data.getString("n10");
+                    n11 = data.getString("n11");
+                    n12 = data.getString("n12");
+                    n13 = data.getString("n13");
+                    n14 = data.getString("n14");
+                    n15 = data.getString("n15");
+                    n16 = data.getString("n16");
+                    n17 = data.getString("n17");
+                    n18 = data.getString("n18");
+                    n19 = data.getString("n19");
+                    n20 = data.getString("n20");
+                    preDrawCode = n1 + "," + n2 + "," + n3 + "," + n4 + "," + n5 + "," + n6 + "," + n7 + "," + n8 + "," + n9 + "," + n10 + "," + n11 + "," + n12 + "," + n13 + "," + n14 + "," + n15 + "," + n16 + "," + n17 + "," + n18 + "," + n19 + "," + n20;
                     id = this.insertBjkn(preDrawIssue, preDrawCode, "6909");
                     if (id == 1) {
                         fileBuild = 1;

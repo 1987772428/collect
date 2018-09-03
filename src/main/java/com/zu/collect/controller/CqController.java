@@ -161,7 +161,6 @@ public class CqController {
         return "ok";
     }
 
-
     /**
      * 6909采集
      * */

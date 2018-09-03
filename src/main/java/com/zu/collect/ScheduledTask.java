@@ -78,8 +78,15 @@ public class ScheduledTask {
     @Scheduled(cron="${scheduled.cron.cqsf}")
     public void scheduleTaskCqsf()
     {
-        logger.info("开始采集重庆十分（幸运农场）号码");
+        logger.info("开始采集重庆十分（幸运农场）168号码");
         cqsfController.collect();
+    }
+
+    @Scheduled(cron="${scheduled.cron.cqsf}")
+    public void scheduleTaskCqsf6909()
+    {
+        logger.info("开始采集重庆十分（幸运农场）6909号码");
+        cqsfController.collect6909();
     }
 
     @Scheduled(cron="${scheduled.cron.cq}")
@@ -101,6 +108,13 @@ public class ScheduledTask {
     {
         logger.info("开始采集广东十分号码");
         gdsfController.collect();
+    }
+
+    @Scheduled(cron="${scheduled.cron.gdsf}")
+    public void scheduleTaskGdsf6909()
+    {
+        logger.info("开始采集广东十分6909号码");
+        gdsfController.collect6909();
     }
 
     @Scheduled(cron="${scheduled.cron.shsf}")
