@@ -48,7 +48,7 @@ public class CqsfController {
         // 获取号码
         try{
             String html;
-            html = command.html(cqsfOfficial + "&t=" + System.currentTimeMillis() + "&g_tk=&_=" + (System.currentTimeMillis() + 1), "");
+            html = command.html(cqsfOfficial + "&t=" + System.currentTimeMillis() + "&g_tk=&_=" + (System.currentTimeMillis() + 1), "", "");
             if (!html.equals("404")) {
                 JSONObject number = JSONObject.parseObject(html.trim());
                 if (number.getString("errCode").equals("0")) {
@@ -100,7 +100,7 @@ public class CqsfController {
         // 获取号码
         try{
             String html;
-            html = command.html(cqsf6909 + System.currentTimeMillis(), "");
+            html = command.html(cqsf6909 + System.currentTimeMillis(), "", "");
             // 解析获取的json字符串
             if (!html.equals("404")) {
                 JSONObject number = JSONObject.parseObject(html.trim());
@@ -168,8 +168,8 @@ public class CqsfController {
         if (command.useArraysBinarySearch(arr, platform)) {
             openNumber = preDrawCode.split(",");
         } else {
+            openNumber = null;
             logger.error(lotName + platform + "号码切割失败");
-            openNumber = preDrawCode.split("|");
         }
         try {
             // 判断期号是否存在

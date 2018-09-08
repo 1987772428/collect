@@ -5,8 +5,9 @@
 <configuration status="WARN" monitorInterval="30">
     <Properties>
         <!-- 配置日志文件输出目录，此配置将日志输出到tomcat根目录下的指定文件夹 -->
-        <Property name="LOG_HOME">F:</Property>
-        <!--<Property name="LOG_HOME">E:</Property>-->
+        <!--<Property name="LOG_HOME">F:</Property>-->
+        <Property name="LOG_HOME">E:</Property>
+        <!--<Property name="LOG_HOME">E:/jar</Property>-->
     </Properties>
 
     <!--先定义所有的appender-->

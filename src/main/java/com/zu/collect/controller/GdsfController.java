@@ -48,7 +48,7 @@ public class GdsfController {
         // 获取号码
         try {
             String html;
-            html = command.html(gdsf168, "");
+            html = command.html(gdsf168, "", "");
 
             // 解析获取的json字符串
             if (!html.equals("404")) {
@@ -67,7 +67,7 @@ public class GdsfController {
                     // 开奖号码
                     preDrawCode = data.getString("preDrawCode");
                     // logger.info("期号：" + preDrawIssue + ", 开奖号码：" + preDrawCode);
-                    id = this.insertGdsf(preDrawIssue, preDrawCode, "168");
+                    id = this.insertGdsf(preDrawIssue, preDrawCode, "s168");
                     if (id == 1) {
                         fileBuild = 1;
                     }
@@ -103,7 +103,7 @@ public class GdsfController {
         // 获取号码
         try {
             String html;
-            html = command.html(gdsf6909 + System.currentTimeMillis(), "");
+            html = command.html(gdsf6909 + System.currentTimeMillis(), "", "");
 
             // 解析获取的json字符串
             if (!html.equals("404")) {
@@ -129,7 +129,7 @@ public class GdsfController {
                     n7 = data.getString("n7");
                     n8 = data.getString("n8");
                     preDrawCode = n1 + "," + n2 + "," + n3 + "," + n4 + "," + n5 + "," + n6 + "," + n7 + "," + n8;
-                    id = this.insertGdsf(preDrawIssue, preDrawCode, "6909");
+                    id = this.insertGdsf(preDrawIssue, preDrawCode, "s6909");
                     if (id == 1) {
                         fileBuild = 1;
                     }
@@ -166,13 +166,13 @@ public class GdsfController {
         // ID
         int id = Integer.valueOf(preDrawIssue.substring(2, preDrawIssue.length()));
         // 开奖号码
-        String[] arr = new String[] {"168", "6909"};
+        String[] arr = new String[] {"s168", "s6909"};
         String[] openNumber;
         if (command.useArraysBinarySearch(arr, platform)) {
             openNumber = preDrawCode.split(",");
         } else {
+            openNumber = null;
             logger.error(lotName + platform + "号码切割失败");
-            openNumber = preDrawCode.split("|");
         }
         try {
             // 判断期号是否存在

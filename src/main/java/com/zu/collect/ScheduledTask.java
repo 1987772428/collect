@@ -39,6 +39,12 @@ public class ScheduledTask {
     @Autowired
     GxsfController gxsfController;
 
+    @Autowired
+    D3Controller d3Controller;
+
+    @Autowired
+    P3Controller p3Controller;
+
     // @Scheduled(initialDelay=1000, fixedDelay=30000)
     @Scheduled(cron = "${scheduled.cron.bjkn}")
     public void scheduleTaskBjkn()
@@ -103,6 +109,13 @@ public class ScheduledTask {
         cqController.collect6909();
     }
 
+    @Scheduled(cron="${scheduled.cron.cq}")
+    public void scheduleTaskCqsina()
+    {
+        logger.info("开始采集重庆时时彩sina号码");
+        cqController.collectsina();
+    }
+
     @Scheduled(cron="${scheduled.cron.gdsf}")
     public void scheduleTaskGdsf()
     {
@@ -136,5 +149,19 @@ public class ScheduledTask {
     {
         logger.info("开始采集广西十分号码");
         gxsfController.collect();
+    }
+
+    @Scheduled(cron="${scheduled.cron.d3}")
+    public void scheduleTaskD3()
+    {
+        logger.info("开始采集福彩3D号码");
+        d3Controller.collect();
+    }
+
+    @Scheduled(cron="${scheduled.cron.p3}")
+    public void scheduleTaskP3()
+    {
+        logger.info("开始采集排列3号码");
+        p3Controller.collect();
     }
 }

@@ -47,7 +47,7 @@ public class Gd11Controller {
         // 获取号码
         try {
             String html;
-            html = command.html(gd11Official, "");
+            html = command.html(gd11Official, "", "");
             // 解析获取的json字符串
             if (!html.equals("404")) {
                 html = html.replaceAll(" ", "");
@@ -121,8 +121,8 @@ public class Gd11Controller {
             id = Integer.valueOf(preDrawIssue);
             issue = "20" + preDrawIssue;
         } else {
-            logger.error(lotName + "号码切割失败");
-            openNumber = preDrawCode.split("|");
+            openNumber = null;
+            logger.error(lotName + platform + "号码切割失败");
         }
         try {
             // 判断期号是否存在
@@ -134,7 +134,7 @@ public class Gd11Controller {
                 gd11.setCreate_time(new Date());
                 gd11.setDatetime(new Date());
                 gd11.setState(0);
-                gd11.setPrev_text("official");
+                gd11.setPrev_text(platform);
                 gd11.setBall_1(Integer.valueOf(openNumber[0]));
                 gd11.setBall_2(Integer.valueOf(openNumber[1]));
                 gd11.setBall_3(Integer.valueOf(openNumber[2]));

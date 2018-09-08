@@ -57,7 +57,7 @@ public class XyftController {
             CookieHandler.setDefault(manager);
 
             String html;
-            html = command.html(xyftOfficial, cookies);
+            html = command.html(xyftOfficial, cookies, "");
             if (!html.equals("404")) {
                 html = html.replaceAll(" ", "");
                 html = html.replaceAll("\"", "");
@@ -137,8 +137,8 @@ public class XyftController {
             // index
             openNumber = preDrawCode.split("&nbsp;");
         } else {
-            logger.error(lotName + "号码切割失败");
-            openNumber = preDrawCode.split("|");
+            openNumber = null;
+            logger.error(lotName + platform + "号码切割失败");
         }
         try {
             // 判断期号是否存在
@@ -150,7 +150,7 @@ public class XyftController {
                 xyft.setCreate_time(new Date());
                 xyft.setDatetime(new Date());
                 xyft.setState(0);
-                xyft.setPrev_text("official");
+                xyft.setPrev_text(platform);
                 xyft.setBall_1(Integer.valueOf(openNumber[0]));
                 xyft.setBall_2(Integer.valueOf(openNumber[1]));
                 xyft.setBall_3(Integer.valueOf(openNumber[2]));

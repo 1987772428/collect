@@ -51,6 +51,12 @@ public class Command {
     @Autowired
     GxsfService gxsfService;
 
+    @Autowired
+    D3Service d3Service;
+
+    @Autowired
+    P3Service p3Service;
+
     private List<?> list = new ArrayList<>();
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -59,9 +65,10 @@ public class Command {
      * 获取url页面内容
      * @param urlInfo   String      目标连接地址
      * @param cookies   String      设置的cookies
+     * @param referer   String      referer地址
      * @return html     String      目标内容
      * */
-    public String html(String urlInfo, String cookies)
+    public String html(String urlInfo, String cookies, String referer)
     {
         // Fiddler 抓包设置
         System.setProperty("http.proxyHost", "localhost");
@@ -75,13 +82,17 @@ public class Command {
             CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
             URL url = new URL(urlInfo);
             HttpURLConnection httpUrl = (HttpURLConnection)url.openConnection();
-            httpUrl.setConnectTimeout(5000);
-            httpUrl.setReadTimeout(5000);
+            httpUrl.setConnectTimeout(8000);
+            httpUrl.setReadTimeout(8000);
             // 防止服务器默认的跳转
             // httpUrl.setInstanceFollowRedirects(false);
             // 设置Cookies
             if (!cookies.equals("")) {
                 httpUrl.setRequestProperty("Cookie", cookies);
+            }
+            // 设置referer
+            if (!referer.equals("")) {
+                httpUrl.setRequestProperty("Referer", referer);
             }
             // 防止报403错误。
             httpUrl.setRequestProperty("User-Agent", "Mozilla/31.0 (compatible; MSIE 10.0; Windows NT; DigExt)");
@@ -113,9 +124,7 @@ public class Command {
      * */
     public boolean useArraysBinarySearch(String[] arr, String targetValue)
     {
-        System.out.println(targetValue);
         int a =  Arrays.binarySearch(arr, targetValue);
-        System.out.println(a);
         if(a >= 0)
             return true;
         else
@@ -134,13 +143,13 @@ public class Command {
         // 生成json文件
         try {
             if (json.equals("null")) {
-                logger.info("获取" + lotName + "JSON字符串失败");
+                logger.error("获取" + lotName + "JSON字符串失败");
             } else {
                 Boolean file = creatFile.createFile(jsonName, json);
                 if (file) {
                     logger.info("生成" + lotName + "json文件成功");
                 } else {
-                    logger.info("生成" + lotName + "json文件失败");
+                    logger.error("生成" + lotName + "json文件失败");
                 }
                 file = null;
             }
@@ -295,6 +304,40 @@ public class Command {
             gxsf.setOffSet(0);
             gxsf.setLimit(10);
             list = gxsfService.selectAllGxsf(gxsf);
+            // 生成json字符串
+            string = json();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return string;
+    }
+
+    // 获取福彩3D历史开奖号码
+    public String d3()
+    {
+        String string = "null";
+        try {
+            D3 d3 = new D3();
+            d3.setOffSet(0);
+            d3.setLimit(10);
+            list = d3Service.selectAllD3(d3);
+            // 生成json字符串
+            string = json();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return string;
+    }
+
+    // 获取排列三历史开奖号码
+    public String p3()
+    {
+        String string = "null";
+        try {
+            P3 p3 = new P3();
+            p3.setOffSet(0);
+            p3.setLimit(10);
+            list = p3Service.selectAllP3(p3);
             // 生成json字符串
             string = json();
         } catch (Exception e) {

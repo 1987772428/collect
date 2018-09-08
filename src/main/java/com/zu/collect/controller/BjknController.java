@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @RestController
@@ -69,12 +68,12 @@ public class BjknController {
 
         try{
             String html;
-            html = command.html(bjkn168, "");
+            html = command.html(bjkn168, "", "");
 
             // 解析获取的json字符串
             if (!html.equals("404")) {
                 JSONObject number = JSONObject.parseObject(html.trim());
-                JSONObject  result = JSONObject.parseObject(number.getString("result"));
+                JSONObject result = JSONObject.parseObject(number.getString("result"));
                 JSONArray datalist = JSONArray.parseArray(result.getString("data"));
                 int num = datalist.size();
                 if (num > 10) num = 10;
@@ -88,7 +87,7 @@ public class BjknController {
                     // 开奖号码
                     preDrawCode = data.getString("preDrawCode");
 //                    logger.info("期号：" + preDrawIssue + ", 开奖号码：" + preDrawCode);
-                    id = this.insertBjkn(preDrawIssue, preDrawCode, "168");
+                    id = this.insertBjkn(preDrawIssue, preDrawCode, "s168");
                     if (id == 1) {
                         fileBuild = 1;
                     }
@@ -125,7 +124,7 @@ public class BjknController {
 
         try{
             String html;
-            html = command.html(bjkn6909 + System.currentTimeMillis(), "");
+            html = command.html(bjkn6909 + System.currentTimeMillis(), "", "");
 
             // 解析获取的json字符串
             if (!html.equals("404")) {
@@ -163,7 +162,7 @@ public class BjknController {
                     n19 = data.getString("n19");
                     n20 = data.getString("n20");
                     preDrawCode = n1 + "," + n2 + "," + n3 + "," + n4 + "," + n5 + "," + n6 + "," + n7 + "," + n8 + "," + n9 + "," + n10 + "," + n11 + "," + n12 + "," + n13 + "," + n14 + "," + n15 + "," + n16 + "," + n17 + "," + n18 + "," + n19 + "," + n20;
-                    id = this.insertBjkn(preDrawIssue, preDrawCode, "6909");
+                    id = this.insertBjkn(preDrawIssue, preDrawCode, "s6909");
                     if (id == 1) {
                         fileBuild = 1;
                     }
@@ -200,13 +199,13 @@ public class BjknController {
         // ID
         int id = Integer.valueOf(preDrawIssue);
         // 开奖号码
-        String[] arr = new String[] {"168", "6909"};
+        String[] arr = new String[] {"s168", "s6909"};
         String[] openNumber;
         if (command.useArraysBinarySearch(arr, platform)) {
             openNumber = preDrawCode.split(",");
         } else {
+            openNumber = null;
             logger.error(lotName + platform + "号码切割失败");
-            openNumber = preDrawCode.split("|");
         }
         try {
             // 判断期号是否存在

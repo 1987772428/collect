@@ -42,11 +42,10 @@ public class GxsfController {
     {
         // 是否有新号码，有则生成json文件
         int fileBuild = 0;
-
         // 获取号码
         try{
             String html;
-            html = command.html(gxsfOfficial+ "?timestamp=" + System.currentTimeMillis(), "");
+            html = command.html(gxsfOfficial+ "?timestamp=" + System.currentTimeMillis(), "", "http://www.gxcaipiao.com.cn/klsfnt.html");
             System.out.println(html);
             if (!html.equals("404")) {
                 // 解析xml文件
@@ -73,7 +72,7 @@ public class GxsfController {
                         // 开奖号码
                         preDrawCode = dataAttrs.get(1).getValue();
                         //
-                        id = this.insertGxsf(preDrawIssue, preDrawCode, "500");
+                        id = this.insertGxsf(preDrawIssue, preDrawCode, "official");
                         if (id == 1) {
                             fileBuild = 1;
                         }
@@ -110,13 +109,13 @@ public class GxsfController {
         // ID
         int id = Integer.valueOf(preDrawIssue.substring(2, preDrawIssue.length()));
         // 开奖号码
-        String[] arr = new String[] {"168", "500"};
+        String[] arr = new String[] {"official"};
         String[] openNumber;
         if (command.useArraysBinarySearch(arr, platform)) {
             openNumber = preDrawCode.split(",");
         } else {
-            logger.error(lotName + "号码切割失败");
-            openNumber = preDrawCode.split("|");
+            openNumber = null;
+            logger.error(lotName + platform + "号码切割失败");
         }
         try {
             // 判断期号是否存在
