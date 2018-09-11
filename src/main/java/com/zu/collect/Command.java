@@ -57,6 +57,12 @@ public class Command {
     @Autowired
     P3Service p3Service;
 
+    @Autowired
+    TjService tjService;
+
+    @Autowired
+    TjsfService tjsfService;
+
     private List<?> list = new ArrayList<>();
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -338,6 +344,40 @@ public class Command {
             p3.setOffSet(0);
             p3.setLimit(10);
             list = p3Service.selectAllP3(p3);
+            // 生成json字符串
+            string = json();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return string;
+    }
+
+    // 获取天津时时彩历史开奖号码
+    public String tj()
+    {
+        String string = "null";
+        try {
+            Tj tj = new Tj();
+            tj.setOffSet(0);
+            tj.setLimit(10);
+            list = tjService.selectAllTj(tj);
+            // 生成json字符串
+            string = json();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return string;
+    }
+
+    // 获取天津十分历史开奖号码
+    public String tjsf()
+    {
+        String string = "null";
+        try {
+            Tjsf tjsf = new Tjsf();
+            tjsf.setOffSet(0);
+            tjsf.setLimit(10);
+            list = tjsfService.selectAllTjsf(tjsf);
             // 生成json字符串
             string = json();
         } catch (Exception e) {

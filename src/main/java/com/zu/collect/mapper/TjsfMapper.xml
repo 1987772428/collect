@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zu.collect.dao.TjsfMapper">
+  <resultMap id="BaseResultMap" type="com.zu.collect.model.Tjsf">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="qishu" jdbcType="BIGINT" property="qishu" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="create_time" />
+    <result column="datetime" jdbcType="TIMESTAMP" property="datetime" />
+    <result column="state" jdbcType="BIT" property="state" />
+    <result column="prev_text" jdbcType="VARCHAR" property="prev_text" />
+    <result column="ball_1" jdbcType="INTEGER" property="ball_1" />
+    <result column="ball_2" jdbcType="INTEGER" property="ball_2" />
+    <result column="ball_3" jdbcType="INTEGER" property="ball_3" />
+    <result column="ball_4" jdbcType="INTEGER" property="ball_4" />
+    <result column="ball_5" jdbcType="INTEGER" property="ball_5" />
+    <result column="ball_6" jdbcType="INTEGER" property="ball_6" />
+    <result column="ball_7" jdbcType="INTEGER" property="ball_7" />
+    <result column="ball_8" jdbcType="INTEGER" property="ball_8" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, qishu, create_time, datetime, state, prev_text, ball_1, ball_2, ball_3, ball_4, 
+    ball_5, ball_6, ball_7, ball_8
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from lottery_result_tjsf
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from lottery_result_tjsf
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.zu.collect.model.Tjsf">
+    insert into lottery_result_tjsf (id, qishu, create_time, 
+      datetime, state, prev_text, 
+      ball_1, ball_2, ball_3, 
+      ball_4, ball_5, ball_6, 
+      ball_7, ball_8)
+    values (#{id,jdbcType=INTEGER}, #{qishu,jdbcType=BIGINT}, #{create_time,jdbcType=TIMESTAMP}, 
+      #{datetime,jdbcType=TIMESTAMP}, #{state,jdbcType=BIT}, #{prev_text,jdbcType=VARCHAR}, 
+      #{ball_1,jdbcType=INTEGER}, #{ball_2,jdbcType=INTEGER}, #{ball_3,jdbcType=INTEGER}, 
+      #{ball_4,jdbcType=INTEGER}, #{ball_5,jdbcType=INTEGER}, #{ball_6,jdbcType=INTEGER}, 
+      #{ball_7,jdbcType=INTEGER}, #{ball_8,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.zu.collect.model.Tjsf">
+    insert into lottery_result_tjsf
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="qishu != null">
+        qishu,
+      </if>
+      <if test="create_time != null">
+        create_time,
+      </if>
+      <if test="datetime != null">
+        datetime,
+      </if>
+      <if test="state != null">
+        state,
+      </if>
+      <if test="prev_text != null">
+        prev_text,
+      </if>
+      <if test="ball_1 != null">
+        ball_1,
+      </if>
+      <if test="ball_2 != null">
+        ball_2,
+      </if>
+      <if test="ball_3 != null">
+        ball_3,
+      </if>
+      <if test="ball_4 != null">
+        ball_4,
+      </if>
+      <if test="ball_5 != null">
+        ball_5,
+      </if>
+      <if test="ball_6 != null">
+        ball_6,
+      </if>
+      <if test="ball_7 != null">
+        ball_7,
+      </if>
+      <if test="ball_8 != null">
+        ball_8,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="qishu != null">
+        #{qishu,jdbcType=BIGINT},
+      </if>
+      <if test="create_time != null">
+        #{create_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="datetime != null">
+        #{datetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="state != null">
+        #{state,jdbcType=BIT},
+      </if>
+      <if test="prev_text != null">
+        #{prev_text,jdbcType=VARCHAR},
+      </if>
+      <if test="ball_1 != null">
+        #{ball_1,jdbcType=INTEGER},
+      </if>
+      <if test="ball_2 != null">
+        #{ball_2,jdbcType=INTEGER},
+      </if>
+      <if test="ball_3 != null">
+        #{ball_3,jdbcType=INTEGER},
+      </if>
+      <if test="ball_4 != null">
+        #{ball_4,jdbcType=INTEGER},
+      </if>
+      <if test="ball_5 != null">
+        #{ball_5,jdbcType=INTEGER},
+      </if>
+      <if test="ball_6 != null">
+        #{ball_6,jdbcType=INTEGER},
+      </if>
+      <if test="ball_7 != null">
+        #{ball_7,jdbcType=INTEGER},
+      </if>
+      <if test="ball_8 != null">
+        #{ball_8,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.zu.collect.model.Tjsf">
+    update lottery_result_tjsf
+    <set>
+      <if test="qishu != null">
+        qishu = #{qishu,jdbcType=BIGINT},
+      </if>
+      <if test="create_time != null">
+        create_time = #{create_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="datetime != null">
+        datetime = #{datetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=BIT},
+      </if>
+      <if test="prev_text != null">
+        prev_text = #{prev_text,jdbcType=VARCHAR},
+      </if>
+      <if test="ball_1 != null">
+        ball_1 = #{ball_1,jdbcType=INTEGER},
+      </if>
+      <if test="ball_2 != null">
+        ball_2 = #{ball_2,jdbcType=INTEGER},
+      </if>
+      <if test="ball_3 != null">
+        ball_3 = #{ball_3,jdbcType=INTEGER},
+      </if>
+      <if test="ball_4 != null">
+        ball_4 = #{ball_4,jdbcType=INTEGER},
+      </if>
+      <if test="ball_5 != null">
+        ball_5 = #{ball_5,jdbcType=INTEGER},
+      </if>
+      <if test="ball_6 != null">
+        ball_6 = #{ball_6,jdbcType=INTEGER},
+      </if>
+      <if test="ball_7 != null">
+        ball_7 = #{ball_7,jdbcType=INTEGER},
+      </if>
+      <if test="ball_8 != null">
+        ball_8 = #{ball_8,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.zu.collect.model.Tjsf">
+    update lottery_result_tjsf
+    set qishu = #{qishu,jdbcType=BIGINT},
+      create_time = #{create_time,jdbcType=TIMESTAMP},
+      datetime = #{datetime,jdbcType=TIMESTAMP},
+      state = #{state,jdbcType=BIT},
+      prev_text = #{prev_text,jdbcType=VARCHAR},
+      ball_1 = #{ball_1,jdbcType=INTEGER},
+      ball_2 = #{ball_2,jdbcType=INTEGER},
+      ball_3 = #{ball_3,jdbcType=INTEGER},
+      ball_4 = #{ball_4,jdbcType=INTEGER},
+      ball_5 = #{ball_5,jdbcType=INTEGER},
+      ball_6 = #{ball_6,jdbcType=INTEGER},
+      ball_7 = #{ball_7,jdbcType=INTEGER},
+      ball_8 = #{ball_8,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectAllTjsf" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from lottery_result_tjsf
+    order by id desc
+    limit #{offSet},#{limit}
+  </select>
+</mapper>

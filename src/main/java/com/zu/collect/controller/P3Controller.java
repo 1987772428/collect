@@ -59,7 +59,7 @@ public class P3Controller {
                 for (int i=0; i < num; i++) {
                     JSONObject data = JSONObject.parseObject(datalist.getString(i));
                     // 期号
-                    preDrawIssue = data.getString("preDrawIssue");
+                    preDrawIssue = "20" + data.getString("preDrawIssue");
                     // 开奖号码
                     preDrawCode = data.getString("preDrawCode");
 //                    logger.info("期号：" + preDrawIssue + ", 开奖号码：" + preDrawCode);

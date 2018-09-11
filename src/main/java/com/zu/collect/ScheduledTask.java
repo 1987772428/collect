@@ -45,6 +45,12 @@ public class ScheduledTask {
     @Autowired
     P3Controller p3Controller;
 
+    @Autowired
+    TjController tjController;
+
+    @Autowired
+    TjsfController tjsfController;
+
     // @Scheduled(initialDelay=1000, fixedDelay=30000)
     @Scheduled(cron = "${scheduled.cron.bjkn}")
     public void scheduleTaskBjkn()
@@ -163,5 +169,19 @@ public class ScheduledTask {
     {
         logger.info("开始采集排列3号码");
         p3Controller.collect();
+    }
+
+    @Scheduled(cron="${scheduled.cron.tj}")
+    public void scheduleTaskTj()
+    {
+        logger.info("开始采集天津时时彩号码");
+        tjController.collect();
+    }
+
+    @Scheduled(cron="${scheduled.cron.tjsf}")
+    public void scheduleTaskTjsf()
+    {
+        logger.info("开始采集天津十分号码");
+        tjsfController.collect();
     }
 }
