@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/cqsf")
@@ -28,6 +30,9 @@ public class CqsfController {
 
     @Value("${collect.cqsf.6909}")
     private String cqsf6909;
+
+    @Value("${collect.cqsf.official2}")
+    private String cqsfOfficial2;
 
     @Autowired
     Command command;
@@ -149,6 +154,61 @@ public class CqsfController {
         return "ok";
     }
 
+
+    /**
+     * 官方采集
+     * */
+    @RequestMapping("/collect2")
+    public String collect2()
+    {
+        // 是否有新号码，有则生成json文件
+        int fileBuild = 0;
+
+        // 获取号码
+        try{
+            String html;
+            html = command.html(cqsfOfficial2, "", "");
+            // 解析获取的json字符串
+            if (!html.equals("404")) {
+                html = html.replaceAll(" ", "");
+                String regex = "varCon_BonusCode=\"(.*?)\";";
+                Pattern p = Pattern.compile(regex);
+                Matcher m = p.matcher(html);
+                String preDrawIssue;
+                String preDrawCode;
+                int id;
+                String[] str;
+                String[] strArr;
+                while (m.find()) {
+                    int i=1;
+                    str = m.group(i).split(";");
+                    int start = str.length - 1;
+                    int size = str.length - 10;
+                    for(int j=start; j>size; j--) {
+                        strArr = str[j].split("=");
+                        preDrawIssue = "20" + strArr[0].trim();
+                        preDrawCode = strArr[1].trim();
+                        id = this.insertCqsf(preDrawIssue, preDrawCode, "official");
+                        if (id == 1) {
+                            fileBuild = 1;
+                        }
+                    }
+                }
+                preDrawIssue = null;
+                preDrawCode = null;
+                str = null;
+                strArr = null;
+                // 如果有新号码，生成json文件
+                if (fileBuild == 1) {
+                    this.buildJson();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "ok";
+    }
+
     /**
      * 更新数据
      * @param preDrawIssue  String          期号
@@ -165,6 +225,8 @@ public class CqsfController {
         // 开奖号码
         String[] arr = new String[] {"official", "s6909"};
         String[] openNumber;
+        System.out.println(platform);
+        System.out.println(command.useArraysBinarySearch(arr, platform));
         if (command.useArraysBinarySearch(arr, platform)) {
             openNumber = preDrawCode.split(",");
         } else {

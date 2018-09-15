@@ -100,6 +100,18 @@ public class Command {
             if (!referer.equals("")) {
                 httpUrl.setRequestProperty("Referer", referer);
             }
+//            httpUrl.setRequestProperty("Connection", "keep-alive");
+//            httpUrl.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+
+//            String visitIP = "107.154.196.248:443";
+//            httpUrl.setRequestProperty("X-Forwarded-For",visitIP);
+//            httpUrl.setRequestProperty("Proxy-Client-IP",visitIP);
+//            httpUrl.setRequestProperty("WL-Proxy-Client-IP",visitIP);
+//            httpUrl.setRequestProperty("HTTP_CLIENT_IP",visitIP);
+//            httpUrl.setRequestProperty("HTTP_X_FORWARDED_FOR",visitIP);
+//            httpUrl.setRequestProperty("REMOTE_ADDR",visitIP);
+//            httpUrl.setRequestProperty("Host", "www.cp098.com");
+
             // 防止报403错误。
             httpUrl.setRequestProperty("User-Agent", "Mozilla/31.0 (compatible; MSIE 10.0; Windows NT; DigExt)");
             // 返回码

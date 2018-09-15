@@ -101,6 +101,13 @@ public class ScheduledTask {
         cqsfController.collect6909();
     }
 
+    @Scheduled(cron="${scheduled.cron.cqsf}")
+    public void scheduleTaskCqsf2()
+    {
+        logger.info("开始采集重庆十分（幸运农场）2号码");
+        cqsfController.collect2();
+    }
+
     @Scheduled(cron="${scheduled.cron.cq}")
     public void scheduleTaskCq()
     {

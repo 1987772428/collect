@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @SpringBootApplication
-@EnableScheduling
+//@EnableScheduling
 public class CollectApplication {
 
     public static void main(String[] args) {

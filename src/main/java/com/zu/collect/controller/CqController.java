@@ -45,6 +45,9 @@ public class CqController {
     @Value("${collect.cq.sina}")
     private String cqsina;
 
+    @Value("${collect.cq.cp098}")
+    private String cqcp098;
+
     @Autowired
     Command command;
 
@@ -286,6 +289,60 @@ public class CqController {
         return "ok";
     }
 
+    // 目标有防采集
+    @RequestMapping("/collectcp098")
+    public String collectcp098()
+    {
+        // 是否有新号码，有则生成json文件
+        int fileBuild = 0;
+
+        // 获取号码
+        try{
+            String html;
+            String cookies = "PHPSESSID=geaqalmaove7miqefbodta0e97; visid_incap_1769377=63jPC3JVRGOPGszS9xRlq0bWl1sAAAAAQUIPAAAAAACdyL3z4Q1zqrRDWmgBVyR+; Hm_lvt_1879157738ed4ae4fb5f3f87fe8e0f89=1536677449; incap_ses_573_1769377=hD8nGsUqqGEdJPaqX7XzBxmPmFsAAAAAIBSAUISUtOOK2CY/VQR/xA==; Hm_lpvt_1879157738ed4ae4fb5f3f87fe8e0f89=" + System.currentTimeMillis();
+            String referer = "https://www.cp098.com/cqssc";
+            html = command.html(cqcp098 + "0.63625056912166", cookies, referer);
+System.out.println(html);
+            // 解析获取的json字符串
+            if (!html.equals("404")) {
+                JSONObject number = JSONObject.parseObject(html.trim());
+                JSONObject result = JSONObject.parseObject(number.getString("result"));
+                JSONArray datalist = JSONArray.parseArray(result.getString("data"));
+                int num = datalist.size();
+                if (num > 10) num = 10;
+                String preDrawIssue;
+                String preDrawCode;
+                int id;
+                for (int i=0; i < num; i++) {
+                    JSONObject data = JSONObject.parseObject(datalist.getString(i));
+                    // 期号
+                    preDrawIssue = data.getString("preDrawIssue");
+                    // 开奖号码
+                    preDrawCode = data.getString("preDrawCode");
+                    //
+                    id = this.insertCq(preDrawIssue, preDrawCode, "cp098");
+                    if (id == 1) {
+                        fileBuild = 1;
+                    }
+                    data = null;
+                    preDrawIssue = null;
+                    preDrawCode = null;
+                }
+                html = null;
+                number = null;
+                result = null;
+                datalist = null;
+                // 如果有新号码，生成json文件
+                if (fileBuild == 1) {
+                    this.buildJson();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "ok";
+    }
+
     /**
      * 更新数据
      * @param preDrawIssue  String          期号
@@ -300,7 +357,7 @@ public class CqController {
         // ID
         int id = Integer.valueOf(preDrawIssue.substring(2, preDrawIssue.length()));
         // 开奖号码
-        String[] arr = new String[] {"s168", "s500", "s6909"};
+        String[] arr = new String[] {"s168", "s500", "s6909", "cp098"};
         String[] arr2 = new String[] {"sina"};
         String[] openNumber;
         if (command.useArraysBinarySearch(arr, platform)) {
