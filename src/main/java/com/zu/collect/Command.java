@@ -67,6 +67,8 @@ public class Command {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    private String string = "null";
+
     /**
      * 获取url页面内容
      * @param urlInfo   String      目标连接地址
@@ -142,6 +144,9 @@ public class Command {
      * */
     public boolean useArraysBinarySearch(String[] arr, String targetValue)
     {
+        // 必须先对数组sort排序
+        Arrays.sort(arr);
+        //
         int a =  Arrays.binarySearch(arr, targetValue);
         if(a >= 0)
             return true;
@@ -177,17 +182,88 @@ public class Command {
         }
     }
 
+    // 生成json字符串
+    private String json()
+    {
+        // 系统时间
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+//        StringBuilder stringBuilder = new StringBuilder(); // 单线程
+        StringBuffer stringBuffer = new StringBuffer();
+        JSONObject data;
+        String create_time, datetime;
+        for (Object str : list) {
+            data = JSONObject.parseObject(JSON.toJSONString(str));
+            create_time = dateFormat.format(data.getDate("create_time"));
+            data.put("create_time", create_time);
+            datetime = dateFormat.format(data.getDate("datetime"));
+            data.put("datetime", datetime);
+            stringBuffer.append(data);
+            stringBuffer.append(",");
+        }
+        String json = stringBuffer.toString();
+        json = json.substring(0, json.length() - 1);
+        json = "[" + json + "]";
+        list.clear();
+        return json;
+    }
+
     // 获取北京快乐8历史开奖号码
     public String bjkn()
     {
-        String string = "null";
+//        String string = "null";
         try {
             Bjkn bjkn = new Bjkn();
             bjkn.setOffSet(0);
             bjkn.setLimit(10);
             list = bjknService.selectAllBjkn(bjkn);
+            // 衍生
+            JSONObject object;
+            // 北京快乐8开奖号码
+            List<Integer> numberList = new ArrayList<>();
+            Integer new_ball_1, new_ball_2, new_ball_3;
+            //
+            List<Object> pcddList = new ArrayList<>();
+            for (Object str : list) {
+                // 清空号码信息
+                numberList.clear();
+                //
+                object = JSONObject.parseObject(JSON.toJSONString(str));
+                // 获取快乐8号码
+                for (int i=1; i<=20; i++) {
+                    numberList.add(object.getInteger("ball_" + i));
+                }
+
+                // PC蛋蛋规格
+                    // 升序
+                Collections.sort(numberList);
+                new_ball_1 = numberList.get(0) + numberList.get(1) + numberList.get(2) + numberList.get(3) + numberList.get(4) + numberList.get(5);
+                new_ball_2 = numberList.get(6) + numberList.get(7) + numberList.get(8) + numberList.get(9) + numberList.get(10) + numberList.get(11);
+                new_ball_3 = numberList.get(12) + numberList.get(13) + numberList.get(14) + numberList.get(15) +numberList.get(16) + numberList.get(17);
+                    // 获取个位
+                new_ball_1 = new_ball_1 % 10;
+                new_ball_2 = new_ball_2 % 10;
+                new_ball_3 = new_ball_3 % 10;
+                    // 开奖信息
+                Pcdd pcdd = new Pcdd();
+                pcdd.setBall_1(new_ball_1);
+                pcdd.setBall_2(new_ball_2);
+                pcdd.setBall_3(new_ball_3);
+                pcdd.setCreate_time(object.getDate("create_time"));
+                pcdd.setDatetime(object.getDate("datetime"));
+                pcdd.setId(object.getInteger("id"));
+                pcdd.setPrev_text(object.getString("prev_text"));
+                pcdd.setQishu(object.getLong("qishu"));
+                pcdd.setState(object.getInteger("state"));
+                pcddList.add(pcdd);
+            }
             // 生成json字符串
-            string = json();
+            // bjkn
+            string = this.json();
+            // pcdd
+            list = pcddList;
+            string += "|" + this.json();
+            pcddList.clear();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -197,14 +273,13 @@ public class Command {
     // 获取北京PK10历史开奖号码
     public String bjpk()
     {
-        String string = "null";
         try {
             Bjpk bjpk = new Bjpk();
             bjpk.setOffSet(0);
             bjpk.setLimit(10);
             list = bjpkService.selectAllBjpk(bjpk);
             // 生成json字符串
-            string = json();
+            string = this.json();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -214,14 +289,13 @@ public class Command {
     // 获取幸运飞艇历史开奖号码
     public String xyft()
     {
-        String string = "null";
         try {
             Xyft xyft = new Xyft();
             xyft.setOffSet(0);
             xyft.setLimit(10);
             list = xyftService.selectAllXyft(xyft);
             // 生成json字符串
-            string = json();
+            string = this.json();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -231,14 +305,13 @@ public class Command {
     // 获取重庆十分（幸运农场）历史开奖号码
     public String cqsf()
     {
-        String string = "null";
         try {
             Cqsf cqsf = new Cqsf();
             cqsf.setOffSet(0);
             cqsf.setLimit(10);
             list = cqsfService.selectAllCqsf(cqsf);
             // 生成json字符串
-            string = json();
+            string = this.json();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -248,14 +321,13 @@ public class Command {
     // 获取重庆时时彩历史开奖号码
     public String cq()
     {
-        String string = "null";
         try {
             Cq cq = new Cq();
             cq.setOffSet(0);
             cq.setLimit(10);
             list = cqService.selectAllCq(cq);
             // 生成json字符串
-            string = json();
+            string = this.json();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -265,14 +337,13 @@ public class Command {
     // 获取广东十分历史开奖号码
     public String gdsf()
     {
-        String string = "null";
         try {
             Gdsf gdsf = new Gdsf();
             gdsf.setOffSet(0);
             gdsf.setLimit(10);
             list = gdsfService.selectAllGdsf(gdsf);
             // 生成json字符串
-            string = json();
+            string = this.json();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -282,14 +353,13 @@ public class Command {
     // 获取上海时时乐历史开奖号码
     public String shsf()
     {
-        String string = "null";
         try {
             Shsf shsf = new Shsf();
             shsf.setOffSet(0);
             shsf.setLimit(10);
             list = shsfService.selectAllShsf(shsf);
             // 生成json字符串
-            string = json();
+            string = this.json();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -299,14 +369,13 @@ public class Command {
     // 获取广东11选5历史开奖号码
     public String gd11()
     {
-        String string = "null";
         try {
             Gd11 gd11 = new Gd11();
             gd11.setOffSet(0);
             gd11.setLimit(10);
             list = gd11Service.selectAllGd11(gd11);
             // 生成json字符串
-            string = json();
+            string = this.json();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -316,14 +385,13 @@ public class Command {
     // 获取广西十分历史开奖号码
     public String gxsf()
     {
-        String string = "null";
         try {
             Gxsf gxsf = new Gxsf();
             gxsf.setOffSet(0);
             gxsf.setLimit(10);
             list = gxsfService.selectAllGxsf(gxsf);
             // 生成json字符串
-            string = json();
+            string = this.json();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -333,14 +401,13 @@ public class Command {
     // 获取福彩3D历史开奖号码
     public String d3()
     {
-        String string = "null";
         try {
             D3 d3 = new D3();
             d3.setOffSet(0);
             d3.setLimit(10);
             list = d3Service.selectAllD3(d3);
             // 生成json字符串
-            string = json();
+            string = this.json();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -350,14 +417,13 @@ public class Command {
     // 获取排列三历史开奖号码
     public String p3()
     {
-        String string = "null";
         try {
             P3 p3 = new P3();
             p3.setOffSet(0);
             p3.setLimit(10);
             list = p3Service.selectAllP3(p3);
             // 生成json字符串
-            string = json();
+            string = this.json();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -367,14 +433,13 @@ public class Command {
     // 获取天津时时彩历史开奖号码
     public String tj()
     {
-        String string = "null";
         try {
             Tj tj = new Tj();
             tj.setOffSet(0);
             tj.setLimit(10);
             list = tjService.selectAllTj(tj);
             // 生成json字符串
-            string = json();
+            string = this.json();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -384,41 +449,16 @@ public class Command {
     // 获取天津十分历史开奖号码
     public String tjsf()
     {
-        String string = "null";
         try {
             Tjsf tjsf = new Tjsf();
             tjsf.setOffSet(0);
             tjsf.setLimit(10);
             list = tjsfService.selectAllTjsf(tjsf);
             // 生成json字符串
-            string = json();
+            string = this.json();
         } catch (Exception e) {
             e.printStackTrace();
         }
         return string;
-    }
-
-    // 生成json字符串
-    private String json()
-    {
-        // 系统时间
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-//        StringBuilder stringBuilder = new StringBuilder(); // 单线程
-        StringBuffer stringBuffer = new StringBuffer();
-        for (Object str : list) {
-            JSONObject data = JSONObject.parseObject(JSON.toJSONString(str));
-            String create_time = dateFormat.format(data.getDate("create_time"));
-            data.put("create_time", create_time);
-            String datetime = dateFormat.format(data.getDate("datetime"));
-            data.put("datetime", datetime);
-            stringBuffer.append(data);
-            stringBuffer.append(",");
-        }
-        String json = stringBuffer.toString();
-        json = json.substring(0, json.length() - 1);
-        json = "[" + json + "]";
-        list = null;
-        return json;
     }
 }

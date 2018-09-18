@@ -25,8 +25,8 @@ public class CqsfController {
     private String lotName = "重庆十分（幸运农场）";
     private String jsonName = "cqsf.json";
 
-    @Value("${collect.cqsf.official}")
-    private String cqsfOfficial;
+    @Value("${collect.cqsf.168}")
+    private String cqsf168;
 
     @Value("${collect.cqsf.6909}")
     private String cqsf6909;
@@ -53,38 +53,39 @@ public class CqsfController {
         // 获取号码
         try{
             String html;
-            html = command.html(cqsfOfficial + "&t=" + System.currentTimeMillis() + "&g_tk=&_=" + (System.currentTimeMillis() + 1), "", "");
+            html = command.html(cqsf168, "", "");
             if (!html.equals("404")) {
                 JSONObject number = JSONObject.parseObject(html.trim());
-                if (number.getString("errCode").equals("0")) {
-                    JSONObject result = JSONObject.parseObject(number.getString("data"));
-                    JSONArray datalist = JSONArray.parseArray(result.getString("issueList"));
-                    int num = datalist.size();
-                    if (num > 10) num = 10;
-                    String preDrawIssue;
-                    String preDrawCode;
-                    int id;
-                    for (int i=0; i < num; i++) {
-                        JSONObject data = JSONObject.parseObject(datalist.getString(i));
-                        // 期号
-                        preDrawIssue = data.getString("issueNo");
-                        // 开奖号码
-                        preDrawCode = data.getString("drawResult");
-                        id = this.insertCqsf(preDrawIssue, preDrawCode, "official");
-                        if (id == 1) {
-                            fileBuild = 1;
-                        }
-                        data = null;
-                        preDrawIssue = null;
-                        preDrawCode = null;
+                JSONObject result = JSONObject.parseObject(number.getString("result"));
+                JSONArray datalist = JSONArray.parseArray(result.getString("data"));
+                int num = datalist.size();
+                if (num > 10) num = 10;
+                String preDrawIssue;
+                String preDrawCode;
+                int id;
+                for (int i=0; i < num; i++) {
+                    JSONObject data = JSONObject.parseObject(datalist.getString(i));
+                    // 期号
+                    preDrawIssue = data.getString("preDrawIssue");
+                    // 开奖号码
+                    preDrawCode = data.getString("preDrawCode");
+//                    logger.info("期号：" + preDrawIssue + ", 开奖号码：" + preDrawCode);
+                    id = this.insertCqsf(preDrawIssue, preDrawCode, "s168");
+                    if (id == 1) {
+                        fileBuild = 1;
                     }
-                    html = null;
-                    // 如果有新号码，生成json文件
-                    if (fileBuild == 1) {
-                        this.buildJson();
-                    }
-                } else {
-                    logger.error(lotName + "解析数据异常");
+                    data = null;
+                    preDrawIssue = null;
+                    preDrawCode = null;
+                }
+                html = null;
+                number = null;
+                result = null;
+                datalist = null;
+                // 如果有新号码，生成json文件
+                if (fileBuild == 1) {
+//                    System.out.println("生成北京快乐8json文件开始");
+                    this.buildJson();
                 }
             }
         } catch (Exception e) {
@@ -223,10 +224,8 @@ public class CqsfController {
         // ID
         int id = Integer.valueOf(preDrawIssue.substring(2, preDrawIssue.length()));
         // 开奖号码
-        String[] arr = new String[] {"official", "s6909"};
+        String[] arr = new String[] {"official", "s6909", "s168"};
         String[] openNumber;
-        System.out.println(platform);
-        System.out.println(command.useArraysBinarySearch(arr, platform));
         if (command.useArraysBinarySearch(arr, platform)) {
             openNumber = preDrawCode.split(",");
         } else {

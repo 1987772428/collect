@@ -22,6 +22,8 @@ public class BjknController {
 
     private String lotName = "北京快乐8";
     private String jsonName = "bjkn.json";
+    final private String pcddName = "PC蛋蛋";
+    final private String pcddJson = "pcdd.json";
 
     @Value("${collect.bjkn.168}")
     private String bjkn168;
@@ -259,7 +261,11 @@ public class BjknController {
     private void buildJson()
     {
         String json = command.bjkn();
-        command.buildJson(lotName, jsonName, json);
+        String[] jsons;
+        jsons = json.split("\\|");
+        command.buildJson(lotName, jsonName, jsons[0]);
+        // 衍生：PC蛋蛋
+        command.buildJson(pcddName, pcddJson, jsons[1]);
     }
 
 }
