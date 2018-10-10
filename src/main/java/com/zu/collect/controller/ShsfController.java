@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,16 +43,20 @@ public class ShsfController {
         // 是否有新号码，有则生成json文件
         int fileBuild = 0;
 
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
         // 获取号码
         try {
             String html;
-            html = command.html(shsfOfficial, "", "");
+            html = command.html(shsfOfficial + "?dateOptions=" + dateFormat.format(new Date()), "", "");
             // 解析获取的json字符串
             if (!html.equals("404")) {
                 html = html.replaceAll(" ", "");
                 html = html.replaceAll("-", "");
                 html = html.replaceAll("\"", "");
                 html = html.replaceAll("fl", "");
+                html = html.replaceAll("con8", "con6");
+                html = html.replaceAll("con9", "con7");
                 String regex = "<divclass=lm2con6>(.*?)</p></div>";
                 Pattern p = Pattern.compile(regex);
                 Matcher m = p.matcher(html);

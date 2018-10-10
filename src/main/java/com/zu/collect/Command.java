@@ -70,7 +70,7 @@ public class Command {
     private String string = "null";
 
     /**
-     * 获取url页面内容
+     * 获取url页面内容    get
      * @param urlInfo   String      目标连接地址
      * @param cookies   String      设置的cookies
      * @param referer   String      referer地址
@@ -116,6 +116,64 @@ public class Command {
 
             // 防止报403错误。
             httpUrl.setRequestProperty("User-Agent", "Mozilla/31.0 (compatible; MSIE 10.0; Windows NT; DigExt)");
+            // 返回码
+            // int responsecode = httpUrl.getResponseCode();
+            InputStream is = httpUrl.getInputStream();
+            BufferedReader br = new BufferedReader(new InputStreamReader(is, "utf-8"));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+            is.close();
+            br.close();
+            html = sb.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error( urlInfo + "获取内容失败");
+            html = "404";
+        }
+        return html;
+    }
+
+    /**
+     * 获取url页面内容    post        待测试
+     * @param urlInfo   String      目标连接地址
+     * @param params    String      请求参数
+     * @param cookies   String      设置的cookies
+     * @param referer   String      referer地址
+     * @return html     String      目标内容
+     * */
+    public String htmlPost(String urlInfo, String params, String cookies, String referer)
+    {
+        String html;
+        try{
+            CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
+            URL url = new URL(urlInfo);
+            HttpURLConnection httpUrl = (HttpURLConnection)url.openConnection();
+            httpUrl.setConnectTimeout(8000);
+            httpUrl.setReadTimeout(8000);
+            // 防止服务器默认的跳转
+            // httpUrl.setInstanceFollowRedirects(false);
+            // 设置Cookies
+            if (!cookies.equals("")) {
+                httpUrl.setRequestProperty("Cookie", cookies);
+            }
+            // 设置referer
+            if (!referer.equals("")) {
+                httpUrl.setRequestProperty("Referer", referer);
+            }
+
+            // 防止报403错误。
+            httpUrl.setRequestProperty("accept", "*/*");
+            httpUrl.setRequestProperty("connection", "Keep-Alive");
+            httpUrl.setRequestProperty("User-Agent", "Mozilla/31.0 (compatible; MSIE 10.0; Windows NT; DigExt)");
+
+            // 发送POST请求必须设置如下两行
+            httpUrl.setDoOutput(true);
+            httpUrl.setDoInput(true);
+            httpUrl.setUseCaches(false); // Post请求不用设置缓存
+
             // 返回码
             // int responsecode = httpUrl.getResponseCode();
             InputStream is = httpUrl.getInputStream();
@@ -234,7 +292,7 @@ public class Command {
                     numberList.add(object.getInteger("ball_" + i));
                 }
 
-                // PC蛋蛋规格
+                // PC蛋蛋规则
                     // 升序
                 Collections.sort(numberList);
                 new_ball_1 = numberList.get(0) + numberList.get(1) + numberList.get(2) + numberList.get(3) + numberList.get(4) + numberList.get(5);
