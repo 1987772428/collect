@@ -26,8 +26,8 @@ public class GdsfController {
     @Value("${collect.gdsf.168}")
     private String gdsf168;
 
-    @Value("${collect.gdsf.6909}")
-    private String gdsf6909;
+    @Value("${collect.gdsf.ifood}")
+    private String ifood;
 
     @Autowired
     Command command;
@@ -92,10 +92,10 @@ public class GdsfController {
     }
 
     /**
-     * 采集号码6909
+     * 采集号码
      * */
-    @RequestMapping("/collect6909")
-    public String collect6909()
+    @RequestMapping("/collectifood")
+    public String collectifood()
     {
         // 是否有新号码，有则生成json文件
         int fileBuild = 0;
@@ -103,8 +103,7 @@ public class GdsfController {
         // 获取号码
         try {
             String html;
-            html = command.html(gdsf6909 + System.currentTimeMillis(), "", "");
-
+            html = command.htmlPost(ifood + "?count=12", "", "", "http://www.ifood1.com");
             // 解析获取的json字符串
             if (!html.equals("404")) {
                 JSONObject number = JSONObject.parseObject(html.trim());
@@ -113,23 +112,16 @@ public class GdsfController {
                 if (num > 10) num = 10;
                 String preDrawIssue;
                 String preDrawCode;
-                String n1,n2,n3,n4,n5,n6,n7,n8;
+                String issue;
                 int id;
                 for (int i = 0; i < num; i++) {
                     JSONObject data = JSONObject.parseObject(datalist.getString(i));
                     // 期号
-                    preDrawIssue = data.getString("termNum");
+                    issue = data.getString("termNum");
+                    preDrawIssue = issue.substring(0, 8) + issue.substring(9, issue.length());
                     // 开奖号码
-                    n1 = data.getString("n1");
-                    n2 = data.getString("n2");
-                    n3 = data.getString("n3");
-                    n4 = data.getString("n4");
-                    n5 = data.getString("n5");
-                    n6 = data.getString("n6");
-                    n7 = data.getString("n7");
-                    n8 = data.getString("n8");
-                    preDrawCode = n1 + "," + n2 + "," + n3 + "," + n4 + "," + n5 + "," + n6 + "," + n7 + "," + n8;
-                    id = this.insertGdsf(preDrawIssue, preDrawCode, "s6909");
+                    preDrawCode = data.getString("n1") + "," + data.getString("n2") + "," + data.getString("n3") + "," + data.getString("n4") + "," + data.getString("n5") + "," + data.getString("n6") + "," + data.getString("n7") + "," + data.getString("n8");
+                    id = this.insertGdsf(preDrawIssue, preDrawCode, "ifood");
                     if (id == 1) {
                         fileBuild = 1;
                     }
@@ -166,7 +158,7 @@ public class GdsfController {
         // ID
         int id = Integer.valueOf(preDrawIssue.substring(2, preDrawIssue.length()));
         // 开奖号码
-        String[] arr = new String[] {"s168", "s6909"};
+        String[] arr = new String[] {"s168", "ifood"};
         String[] openNumber;
         if (command.useArraysBinarySearch(arr, platform)) {
             openNumber = preDrawCode.split(",");

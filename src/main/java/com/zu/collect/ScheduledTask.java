@@ -58,12 +58,11 @@ public class ScheduledTask {
         logger.info("开始采集北京快乐8168号码");
         bjknController.collect();
     }
-
     @Scheduled(cron = "${scheduled.cron.bjkn}")
-    public void scheduleTaskBjkn6909()
+    public void scheduleTaskBjknNewLand()
     {
-        logger.info("开始采集北京快乐86909号码");
-        bjknController.collect6909();
+        logger.info("开始采集北京快乐8新大陆号码");
+        bjknController.collectnewland();
     }
 
     @Scheduled(cron="${scheduled.cron.bjpk}")
@@ -73,11 +72,11 @@ public class ScheduledTask {
         bjpkController.collect();
     }
 
-    @Scheduled(cron="${scheduled.cron.bjpk}")
-    public void scheduleTaskBjpk6909()
+//    @Scheduled(cron="${scheduled.cron.bjpk.cpk}")
+    public void scheduleTaskBjpkCaipiaokong()
     {
-        logger.info("开始采集北京pk106909号码");
-        bjpkController.collect6909();
+        logger.info("开始采集北京pk10彩票控号码");
+        bjpkController.collectcaipiaokong();
     }
 
     @Scheduled(cron="${scheduled.cron.xyft}")
@@ -87,18 +86,18 @@ public class ScheduledTask {
         xyftController.collect();
     }
 
+    @Scheduled(cron="${scheduled.cron.xyft}")
+    public void scheduleTaskXyftifood()
+    {
+        logger.info("开始采集幸运飞艇ifood号码");
+        xyftController.collectifood();
+    }
+
     @Scheduled(cron="${scheduled.cron.cqsf}")
     public void scheduleTaskCqsf()
     {
         logger.info("开始采集重庆十分（幸运农场）168号码");
         cqsfController.collect();
-    }
-
-    @Scheduled(cron="${scheduled.cron.cqsf}")
-    public void scheduleTaskCqsf6909()
-    {
-        logger.info("开始采集重庆十分（幸运农场）6909号码");
-        cqsfController.collect6909();
     }
 
     @Scheduled(cron="${scheduled.cron.cqsf}")
@@ -116,17 +115,17 @@ public class ScheduledTask {
     }
 
     @Scheduled(cron="${scheduled.cron.cq}")
-    public void scheduleTaskCq6909()
-    {
-        logger.info("开始采集重庆时时彩6909号码");
-        cqController.collect6909();
-    }
-
-    @Scheduled(cron="${scheduled.cron.cq}")
     public void scheduleTaskCqsina()
     {
         logger.info("开始采集重庆时时彩sina号码");
         cqController.collectsina();
+    }
+
+    @Scheduled(cron="${scheduled.cron.cq.cpk}")
+    public void scheduleTaskCqCaipiaokong()
+    {
+        logger.info("开始采集重庆时时彩彩票控号码");
+        cqController.collectcaipiaokong();
     }
 
     @Scheduled(cron="${scheduled.cron.gdsf}")
@@ -137,17 +136,31 @@ public class ScheduledTask {
     }
 
     @Scheduled(cron="${scheduled.cron.gdsf}")
-    public void scheduleTaskGdsf6909()
+    public void scheduleTaskGdsfifood()
     {
-        logger.info("开始采集广东十分6909号码");
-        gdsfController.collect6909();
+        logger.info("开始采集广东十分ifood号码");
+        gdsfController.collectifood();
     }
 
     @Scheduled(cron="${scheduled.cron.shsf}")
     public void scheduleTaskShsf()
     {
-        logger.info("开始采集上海时时乐号码");
+        logger.info("开始采集上海时时乐359号码");
         shsfController.collect();
+    }
+
+    @Scheduled(cron="${scheduled.cron.shsf}")
+    public void scheduleTaskShsfcaim8()
+    {
+        logger.info("开始采集上海时时乐彩迷号码");
+        shsfController.collectcaim8();
+    }
+
+    @Scheduled(cron="${scheduled.cron.shsf}")
+    public void scheduleTaskShsf11()
+    {
+        logger.info("开始采集上海时时乐11号码");
+        shsfController.collect11();
     }
 
     @Scheduled(cron="${scheduled.cron.gd11}")
@@ -155,6 +168,20 @@ public class ScheduledTask {
     {
         logger.info("开始采集广东11选5号码");
         gd11Controller.collect();
+    }
+
+    @Scheduled(cron="${scheduled.cron.gd11}")
+    public void scheduleTaskGd11168()
+    {
+        logger.info("开始采集168广东11选5号码");
+        gd11Controller.collect168();
+    }
+
+    @Scheduled(cron = "${scheduled.cron.gd11}")
+    public void scheduleTaskGd11NewLand()
+    {
+        logger.info("开始采集广东11选5新大陆号码");
+        gd11Controller.collectnewland();
     }
 
     @Scheduled(cron="${scheduled.cron.gxsf}")
@@ -183,6 +210,13 @@ public class ScheduledTask {
     {
         logger.info("开始采集天津时时彩号码");
         tjController.collect();
+    }
+
+    @Scheduled(cron="${scheduled.cron.tj}")
+    public void scheduleTaskTjNewLand()
+    {
+        logger.info("开始采集天津时时彩新大陆号码");
+        tjController.collectnewland();
     }
 
     @Scheduled(cron="${scheduled.cron.tjsf}")

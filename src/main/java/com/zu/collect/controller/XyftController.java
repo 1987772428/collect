@@ -1,5 +1,7 @@
 package com.zu.collect.controller;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.zu.collect.Command;
 import com.zu.collect.model.Xyft;
 import com.zu.collect.service.XyftService;
@@ -32,6 +34,9 @@ public class XyftController {
 
     @Value("${collect.xyft.cookies}")
     private String cookies;
+
+    @Value("${collect.xyft.ifood}")
+    private String ifood;
 
     @Autowired
     Command command;
@@ -116,6 +121,58 @@ public class XyftController {
     }
 
     /**
+     * 采集号码
+     * */
+    @RequestMapping("/collectifood")
+    public String collectifood()
+    {
+        // 是否有新号码，有则生成json文件
+        int fileBuild = 0;
+
+        // 获取号码
+        try {
+            String html;
+            html = command.htmlPost(ifood + "?count=12", "", "", "http://www.ifood1.com");
+            // 解析获取的json字符串
+            if (!html.equals("404")) {
+                JSONObject number = JSONObject.parseObject(html.trim());
+                JSONArray datalist = JSONArray.parseArray(number.getString("rows"));
+                int num = datalist.size();
+                if (num > 10) num = 10;
+                String preDrawIssue;
+                String preDrawCode;
+                int id;
+                for (int i = 0; i < num; i++) {
+                    JSONObject data = JSONObject.parseObject(datalist.getString(i));
+                    // 期号
+                    preDrawIssue = data.getString("termNum");
+                    // 开奖号码
+                    preDrawCode = data.getString("n1") + "," + data.getString("n2") + "," + data.getString("n3") + "," + data.getString("n4") + "," + data.getString("n5") + "," + data.getString("n6") + "," + data.getString("n7") + "," + data.getString("n8") + "," + data.getString("n9") + "," + data.getString("n10");
+                    id = this.insertXyft(preDrawIssue, preDrawCode, "ifood");
+                    if (id == 1) {
+                        fileBuild = 1;
+                    }
+                    data = null;
+                    preDrawIssue = null;
+                    preDrawCode = null;
+                }
+                html = null;
+                number = null;
+                datalist = null;
+                // 如果有新号码，生成json文件
+                if (fileBuild == 1) {
+                    this.buildJson();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return "ok";
+    }
+
+
+    /**
      * 更新数据
      * @param preDrawIssue  String          期号
      * @param preDrawCode   string          开奖号码
@@ -130,12 +187,15 @@ public class XyftController {
         int id = Integer.valueOf(preDrawIssue.substring(2, preDrawIssue.length()));
         // 开奖号码
         String[] arr = new String[] {"official"};
+        String[] arr2 = new String[] {"ifood"};
         String[] openNumber;
         if (command.useArraysBinarySearch(arr, platform)) {
             // history
 //                openNumber = preDrawCode.split("</span>");
             // index
             openNumber = preDrawCode.split("&nbsp;");
+        } else if (command.useArraysBinarySearch(arr2, platform)) {
+            openNumber = preDrawCode.split(",");
         } else {
             openNumber = null;
             logger.error(lotName + platform + "号码切割失败");

@@ -1,5 +1,6 @@
 package com.zu.collect.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.zu.collect.Command;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
+import java.util.Iterator;
 
 @RestController
 @RequestMapping("/bjpk")
@@ -26,8 +28,8 @@ public class BjpkController {
     @Value("${collect.bjpk.168}")
     private String bjpk168;
 
-    @Value("${collect.bjpk.6909}")
-    private String bjpk6909;
+    @Value("${collect.bjpk.caipiaokong}")
+    private String bjpkcaipiaokong;
 
     @Autowired
     Command command;
@@ -90,12 +92,11 @@ public class BjpkController {
         return "ok";
     }
 
-
     /**
-     * 采集号码6909
+     * 彩票控采集号码
      * */
-    @RequestMapping("/collect6909")
-    public String collect6909()
+    @RequestMapping("/collectcpk")
+    public String collectcaipiaokong()
     {
         // 是否有新号码，有则生成json文件
         int fileBuild = 0;
@@ -103,46 +104,38 @@ public class BjpkController {
         // 获取号码
         try{
             String html;
-            html = command.html(bjpk6909 + System.currentTimeMillis(), "", "");
+            html = command.html(bjpkcaipiaokong, "", "");
 
             // 解析获取的json字符串
             if (!html.equals("404")) {
                 JSONObject number = JSONObject.parseObject(html.trim());
-                JSONArray datalist = JSONArray.parseArray(number.getString("rows"));
-                int num = datalist.size();
-                if (num > 10) num = 10;
+
+                // 正式提取未知的key值
+                Iterator<String> sIterator = number.keySet().iterator();
+                // 循环并得到key列表
                 String preDrawIssue;
                 String preDrawCode;
-                String n1,n2,n3,n4,n5,n6,n7,n8,n9,n10;
+                String value;
+                JSONObject jsonvalue;
                 int id;
-                for (int i=0; i < num; i++) {
-                    JSONObject data = JSONObject.parseObject(datalist.getString(i));
-                    // 期号
-                    preDrawIssue = data.getString("termNum");
-                    // 开奖号码
-                    n1 = data.getString("n1");
-                    n2 = data.getString("n2");
-                    n3 = data.getString("n3");
-                    n4 = data.getString("n4");
-                    n5 = data.getString("n5");
-                    n6 = data.getString("n6");
-                    n7 = data.getString("n7");
-                    n8 = data.getString("n8");
-                    n9 = data.getString("n9");
-                    n10 = data.getString("n10");
-                    preDrawCode = n1 + "," + n2 + "," + n3 + "," + n4 + "," + n5 + "," + n6 + "," + n7 + "," + n8 + "," + n9 + "," + n10;
-                    // logger.info("期号：" + preDrawIssue + ", 开奖号码：" + preDrawCode);
-                    id = this.insertBjpk(preDrawIssue, preDrawCode, "s6909");
+                while (sIterator.hasNext()) {
+                    // 获得key
+                    preDrawIssue = sIterator.next();
+                    // 获得key值对应的value
+                    value = number.getString(preDrawIssue);
+                    jsonvalue = JSON.parseObject(value);
+                    preDrawCode = jsonvalue.getString("number");
+
+                    //
+                    id = this.insertBjpk(preDrawIssue, preDrawCode, "caipiaokong");
                     if (id == 1) {
                         fileBuild = 1;
                     }
-                    data = null;
                     preDrawIssue = null;
                     preDrawCode = null;
                 }
+
                 html = null;
-                number = null;
-                datalist = null;
                 // 如果有新号码，生成json文件
                 if (fileBuild == 1) {
                     this.buildJson();
@@ -154,6 +147,7 @@ public class BjpkController {
 
         return "ok";
     }
+
 
     /**
      * 更新数据
@@ -169,7 +163,7 @@ public class BjpkController {
         // ID
         int id = Integer.valueOf(preDrawIssue);
         // 开奖号码
-        String[] arr = new String[] {"s168", "s6909"};
+        String[] arr = new String[] {"s168", "caipiaokong"};
         String[] openNumber;
         if (command.useArraysBinarySearch(arr, platform)) {
             openNumber = preDrawCode.split(",");

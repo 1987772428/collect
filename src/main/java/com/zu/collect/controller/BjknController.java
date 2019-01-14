@@ -28,8 +28,8 @@ public class BjknController {
     @Value("${collect.bjkn.168}")
     private String bjkn168;
 
-    @Value("${collect.bjkn.6909}")
-    private String bjkn6909;
+    @Value("${collect.bjkn.newland}")
+    private String newland;
 
     @Autowired
     private BjknService bjknService;
@@ -115,56 +115,37 @@ public class BjknController {
         return "ok";
     }
 
+
     /**
-     * 采集开奖号码6909
+     * 采集开奖号码
      */
-    @RequestMapping("/collect6909")
-    public String collect6909()
+    @RequestMapping("/collectnewland")
+    public String collectnewland()
     {
         // 是否有新号码
         int fileBuild = 0;
 
         try{
             String html;
-            html = command.html(bjkn6909 + System.currentTimeMillis(), "", "");
+            html = command.html(newland, "", "");
 
             // 解析获取的json字符串
             if (!html.equals("404")) {
                 JSONObject number = JSONObject.parseObject(html.trim());
-                JSONArray datalist = JSONArray.parseArray(number.getString("rows"));
+                JSONObject result = JSONObject.parseObject(number.getString("result"));
+                JSONArray datalist = JSONArray.parseArray(result.getString("data"));
                 int num = datalist.size();
                 if (num > 10) num = 10;
                 String preDrawIssue;
                 String preDrawCode;
-                String n1,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12,n13,n14,n15,n16,n17,n18,n19,n20;
                 int id;
                 for (int i=0; i < num; i++) {
                     JSONObject data = JSONObject.parseObject(datalist.getString(i));
                     // 期号
-                    preDrawIssue = data.getString("termNum");
+                    preDrawIssue = data.getString("preDrawIssue");
                     // 开奖号码
-                    n1 = data.getString("n1");
-                    n2 = data.getString("n2");
-                    n3 = data.getString("n3");
-                    n4 = data.getString("n4");
-                    n5 = data.getString("n5");
-                    n6 = data.getString("n6");
-                    n7 = data.getString("n7");
-                    n8 = data.getString("n8");
-                    n9 = data.getString("n9");
-                    n10 = data.getString("n10");
-                    n11 = data.getString("n11");
-                    n12 = data.getString("n12");
-                    n13 = data.getString("n13");
-                    n14 = data.getString("n14");
-                    n15 = data.getString("n15");
-                    n16 = data.getString("n16");
-                    n17 = data.getString("n17");
-                    n18 = data.getString("n18");
-                    n19 = data.getString("n19");
-                    n20 = data.getString("n20");
-                    preDrawCode = n1 + "," + n2 + "," + n3 + "," + n4 + "," + n5 + "," + n6 + "," + n7 + "," + n8 + "," + n9 + "," + n10 + "," + n11 + "," + n12 + "," + n13 + "," + n14 + "," + n15 + "," + n16 + "," + n17 + "," + n18 + "," + n19 + "," + n20;
-                    id = this.insertBjkn(preDrawIssue, preDrawCode, "s6909");
+                    preDrawCode = data.getString("preDrawCode");
+                    id = this.insertBjkn(preDrawIssue, preDrawCode, "newland");
                     if (id == 1) {
                         fileBuild = 1;
                     }
@@ -174,6 +155,7 @@ public class BjknController {
                 }
                 html = null;
                 number = null;
+                result = null;
                 datalist = null;
                 // 如果有新号码，生成json文件
                 if (fileBuild == 1) {
@@ -201,7 +183,7 @@ public class BjknController {
         // ID
         int id = Integer.valueOf(preDrawIssue);
         // 开奖号码
-        String[] arr = new String[] {"s168", "s6909"};
+        String[] arr = new String[] {"s168", "newland"};
         String[] openNumber;
         if (command.useArraysBinarySearch(arr, platform)) {
             openNumber = preDrawCode.split(",");

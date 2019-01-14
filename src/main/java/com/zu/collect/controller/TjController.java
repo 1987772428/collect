@@ -1,5 +1,7 @@
 package com.zu.collect.controller;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.zu.collect.Command;
 import com.zu.collect.model.Tj;
 import com.zu.collect.service.TjService;
@@ -25,6 +27,9 @@ public class TjController {
 
     @Value("${collect.tj.official}")
     private String tjOfficial;
+
+    @Value("${collect.tj.newland}")
+    private String newland;
 
     @Autowired
     Command command;
@@ -88,6 +93,61 @@ public class TjController {
     }
 
     /**
+     * 采集号码
+     * */
+    @RequestMapping("/collectnewland")
+    public String collectnewland()
+    {
+        // 是否有新号码，有则生成json文件
+        int fileBuild = 0;
+
+        // 获取号码
+        try {
+            String html;
+            html = command.html(newland, "", "");
+
+            // 解析获取的json字符串
+            if (!html.equals("404")) {
+                JSONObject number = JSONObject.parseObject(html.trim());
+                JSONObject result = JSONObject.parseObject(number.getString("result"));
+                JSONArray datalist = JSONArray.parseArray(result.getString("data"));
+                int num = datalist.size();
+                if (num > 10) num = 10;
+                String preDrawIssue;
+                String preDrawCode;
+                int id;
+                for (int i = 0; i < num; i++) {
+                    JSONObject data = JSONObject.parseObject(datalist.getString(i));
+                    // 期号
+                    preDrawIssue = data.getString("preDrawIssue");
+                    // 开奖号码
+                    preDrawCode = data.getString("preDrawCode");
+                    // logger.info("期号：" + preDrawIssue + ", 开奖号码：" + preDrawCode);
+                    id = this.insertTj(preDrawIssue, preDrawCode, "newland");
+                    if (id == 1) {
+                        fileBuild = 1;
+                    }
+                    data = null;
+                    preDrawIssue = null;
+                    preDrawCode = null;
+                }
+                html = null;
+                number = null;
+                result = null;
+                datalist = null;
+                // 如果有新号码，生成json文件
+                if (fileBuild == 1) {
+                    this.buildJson();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return "ok";
+    }
+
+    /**
      * 更新数据
      * @param preDrawIssue  String          期号
      * @param preDrawCode   string          开奖号码
@@ -102,10 +162,13 @@ public class TjController {
         int id = Integer.valueOf(preDrawIssue.substring(2, preDrawIssue.length()));
         // 开奖号码
         String[] arr = new String[] {"official"};
+        String[] arr2 = new String[] {"newland"};
         String[] openNumber;
         if (command.useArraysBinarySearch(arr, platform)) {
             openNumber = preDrawCode.split("\\|");
-        } else {
+        } else if (command.useArraysBinarySearch(arr2, platform)) {
+            openNumber = preDrawCode.split(",");
+        }else {
             openNumber = null;
             logger.error(lotName + platform + "号码切割失败");
         }

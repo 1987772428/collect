@@ -1,5 +1,6 @@
 package com.zu.collect.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.zu.collect.Command;
@@ -39,11 +40,11 @@ public class CqController {
     @Value("${collect.cq.168}")
     private String cq168;
 
-    @Value("${collect.cq.6909}")
-    private String cq6909;
-
     @Value("${collect.cq.sina}")
     private String cqsina;
+
+    @Value("${collect.cq.caipiaokong}")
+    private String cqcaipiaokong;
 
     @Autowired
     Command command;
@@ -168,64 +169,6 @@ public class CqController {
     }
 
     /**
-     * 6909采集
-     * */
-    @RequestMapping("/collect6909")
-    public String collect6909()
-    {
-        // 是否有新号码，有则生成json文件
-        int fileBuild = 0;
-
-        // 获取号码
-        try{
-            String html;
-            html = command.html(cq6909 + System.currentTimeMillis(), "", "");
-//            {"qq":"93058680","rows":[{"id":"95226","termNum":"20180903046","lotteryTime":"2018-09-03 13:40:00","n1":1,"n2":5,"n3":5,"n4":6,"n5":0},{"id":"95225","termNum":"20180903045","lotteryTime":"2018-09-03 13:30:00","n1":4,"n2":3,"n3":5,"n4":0,"n5":6}],"success":true}
-            // 解析获取的json字符串
-            if (!html.equals("404")) {
-                JSONObject number = JSONObject.parseObject(html.trim());
-                JSONArray datalist = JSONArray.parseArray(number.getString("rows"));
-                int num = datalist.size();
-                if (num > 10) num = 10;
-                String preDrawIssue;
-                String preDrawCode;
-                String n1,n2,n3,n4,n5;
-                int id;
-                for (int i=0; i < num; i++) {
-                    JSONObject data = JSONObject.parseObject(datalist.getString(i));
-                    // 期号
-                    preDrawIssue = data.getString("termNum");
-                    // 开奖号码
-                    n1 = data.getString("n1");
-                    n2 = data.getString("n2");
-                    n3 = data.getString("n3");
-                    n4 = data.getString("n4");
-                    n5 = data.getString("n5");
-                    preDrawCode = n1 + "," + n2 + "," + n3 + "," + n4 + "," + n5;
-                    //
-                    id = this.insertCq(preDrawIssue, preDrawCode, "s6909");
-                    if (id == 1) {
-                        fileBuild = 1;
-                    }
-                    data = null;
-                    preDrawIssue = null;
-                    preDrawCode = null;
-                }
-                html = null;
-                number = null;
-                datalist = null;
-                // 如果有新号码，生成json文件
-                if (fileBuild == 1) {
-                    this.buildJson();
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "ok";
-    }
-
-    /**
      * sina采集
      * */
     @RequestMapping("/collectsina")
@@ -287,6 +230,61 @@ public class CqController {
     }
 
     /**
+     * 彩票控采集
+     * */
+    @RequestMapping("/collectcpk")
+    public String collectcaipiaokong()
+    {
+        // 是否有新号码，有则生成json文件
+        int fileBuild = 0;
+
+        // 获取号码
+        try{
+            String html;
+            html = command.html(cqcaipiaokong, "", "");
+
+            // 解析获取的json字符串
+            if (!html.equals("404")) {
+                JSONObject number = JSONObject.parseObject(html.trim());
+
+                // 正式提取未知的key值
+                Iterator<String> sIterator = number.keySet().iterator();
+                // 循环并得到key列表
+                String preDrawIssue;
+                String preDrawCode;
+                String value;
+                JSONObject jsonvalue;
+                int id;
+                while (sIterator.hasNext()) {
+                    // 获得key
+                    preDrawIssue = sIterator.next();
+                    // 获得key值对应的value
+                    value = number.getString(preDrawIssue);
+                    jsonvalue = JSON.parseObject(value);
+                    preDrawCode = jsonvalue.getString("number");
+
+                    //
+                    id = this.insertCq(preDrawIssue, preDrawCode, "caipiaokong");
+                    if (id == 1) {
+                        fileBuild = 1;
+                    }
+                    preDrawIssue = null;
+                    preDrawCode = null;
+                }
+
+                html = null;
+                // 如果有新号码，生成json文件
+                if (fileBuild == 1) {
+                    this.buildJson();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "ok";
+    }
+
+    /**
      * 更新数据
      * @param preDrawIssue  String          期号
      * @param preDrawCode   string          开奖号码
@@ -300,7 +298,7 @@ public class CqController {
         // ID
         int id = Integer.valueOf(preDrawIssue.substring(2, preDrawIssue.length()));
         // 开奖号码
-        String[] arr = new String[] {"s168", "s500", "s6909", "cp098"};
+        String[] arr = new String[] {"s168", "s500", "cp098", "caipiaokong"};
         String[] arr2 = new String[] {"sina"};
         String[] openNumber;
         if (command.useArraysBinarySearch(arr, platform)) {
